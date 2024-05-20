@@ -1,10 +1,21 @@
-#include "main.hpp"
+#pragma once
 
-std::unordered_map<std::wstring, std::filesystem::path> paths = {};
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
-const std::filesystem::path defaultPath = std::getenv("USERPROFILE");
+#include <iostream>
+#include <shlobj.h>
+#include <filesystem>
+#include <functional>
+#include <unordered_set>
 
-std::filesystem::path getAddress() {
+namespace fs = std::filesystem;
+
+const fs::path defaultPath = std::getenv("USERPROFILE");
+
+std::unordered_map<std::wstring, fs::path> paths = {};
+
+fs::path getAddress() {
 	HWND v_hwnd = GetForegroundWindow();
 	if (!v_hwnd) return defaultPath;
 
@@ -44,7 +55,7 @@ std::filesystem::path getAddress() {
 
 void startTerminal()
 {
-	std::filesystem::path path = getAddress();
+	fs::path path = getAddress();
 	printf("Opening terminal in \"%ls\"\n", path.c_str());
 
 	try {
@@ -67,10 +78,6 @@ void startTerminal()
 	}
 }
 
-HHOOK keyboardHook{ NULL };
-
-std::unordered_set<DWORD> keysPressed;
-
 class SHORTCUT {
 public:
 	std::unordered_set<DWORD> keySet;
@@ -81,6 +88,10 @@ std::vector<SHORTCUT> shortcuts = {
 	{ { VK_LWIN, 'T'}, startTerminal},
 	{ { VK_RWIN, 'T'}, startTerminal}
 };
+
+HHOOK keyboardHook{ NULL };
+
+std::unordered_set<DWORD> keysPressed;
 
 LRESULT CALLBACK LowLevelKeyBoardProc(const int nCode, const WPARAM wParam, const LPARAM lParam) {
 	if (nCode != HC_ACTION) return NULL;

@@ -18,16 +18,8 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="knownFolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="knownFolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>
