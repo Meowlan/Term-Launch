@@ -29,15 +29,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - uses: actions/cache/restore@v3
+        id: cache-build
+        with:
+          path: x64/Release
+          key: ${{ runner.os }}-build-${{ github.sha }}
       
       - name: Add MSBuild to PATH
+        if: steps.cache-build.outputs.cache-hit != 'true'
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Build
         working-directory: ${{env.GITHUB_WORKSPACE}}
+        if: steps.cache-build.outputs.cache-hit != 'true'
         # Add additional options to the MSBuild command line here (like platform or verbosity level).
         # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
         run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+
+      - uses: actions/cache/save@v3
+        with:
+          path: x64/Release
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
       - name: Create Release
         id: create_release
