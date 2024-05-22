@@ -5,22 +5,7 @@ name: Build & Release
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
-  workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      title:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Title of the release'
-        # Default value if no value is explicitly provided
-        default: 'v1.0'
-        # Input has to be provided for the workflow to run
-        required: true
-        # The data type of the input
-        type: string
-      description:
-        description: 'Description of the release'
-        required: false
-        type: string
+  workflow_dispatch
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -52,13 +37,22 @@ jobs:
         # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
         run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
 
-      - name: Release
+      - name: Create Release
+        id: create_release
+        uses: shogo82148/actions-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} (draft)
+          draft: true
+          prerelease: false
+
+      - name: Upload to Release
         uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "x64/Release/*.exe"
-          default_release_name: ${{inputs.title}}
-          default_release_body: ${{inputs.description}}
           draft: true
   
