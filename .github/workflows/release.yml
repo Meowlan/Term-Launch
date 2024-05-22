@@ -58,5 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "x64/Release/*.exe"
+          default_release_name: ${{inputs.title}}
+          default_release_body: ${{inputs.description}}
           draft: true
   
