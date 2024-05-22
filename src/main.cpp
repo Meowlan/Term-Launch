@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <functional>
 #include <unordered_set>
+#include <thread>
 
 namespace fs = std::filesystem;
 
