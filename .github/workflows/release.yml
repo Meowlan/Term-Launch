@@ -52,16 +52,9 @@ jobs:
           path: x64/Release
           key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
-      - name: Create Release
-        id: create_release
-        uses: shogo82148/actions-create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }} (draft)
-          draft: true
-          prerelease: false
+      - name: Short handle
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
         uses: xresloader/upload-to-github-release@v1
@@ -70,4 +63,6 @@ jobs:
         with:
           file: "x64/Release/*.exe"
           draft: true
+          default_release_name: Release - ${{ steps.vars.outputs.sha_short }} (Draft)
+          
   
